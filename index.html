@@ -8,3 +8,1270 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>贴纸萌宠乐园｜学生成长报告【多学生管理】</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #f0f2e4;
+        font-family: "Microsoft Yahei", sans-serif;
+        padding: 20px;
+    }
+    .main-wrap{
+        display:grid;
+        grid-template-columns:260px 1fr;
+        gap:16px;
+        max-width:1200px;
+        margin:0 auto;
+    }
+    /* 学生名单侧边栏 */
+    .student-sidebar{
+        background:#fff;
+        border-radius:14px;
+        padding:16px;
+        box-shadow:0 2px 10px #00000018;
+        border:1px solid #b2d89c;
+        height:fit-content;
+    }
+    .student-sidebar h3{
+        color:#347c2c;
+        margin-bottom:12px;
+    }
+    .student-list{
+        max-height:400px;
+        overflow-y:auto;
+        margin:10px 0;
+        border:1px solid #eee;
+        border-radius:8px;
+    }
+    .student-item{
+        padding:8px 10px;
+        cursor:pointer;
+        border-bottom:1px solid #f2f2f2;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+    .student-item.active{
+        background:#e8f4e8;
+        font-weight:bold;
+    }
+    .student-item:hover{
+        background:#f5faf5;
+    }
+    .student-item button{
+        padding:2px 6px;
+        font-size:12px;
+        background:#f44336;
+        color:#fff;
+        border:none;
+        border-radius:4px;
+    }
+    .sidebar-btn-group{
+        display:flex;
+        gap:8px;
+        margin-top:10px;
+    }
+    .sidebar-btn-group button{
+        flex:1;
+        padding:7px;
+        font-size:14px;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+    }
+    .btn-add-stu{
+        background:#2196f3;
+        color:#fff;
+    }
+    .btn-clear-all-stu{
+        background:#ff5722;
+        color:#fff;
+    }
+
+    .container {
+        max-width: 980px;
+    }
+
+    .edit-panel {
+        background: #ffffff;
+        padding: 18px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px #00000018;
+        border: 1px solid #b2d89c;
+    }
+
+    .edit-panel h3 {
+        margin-bottom: 12px;
+        color: #347c2c;
+    }
+
+    .edit-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .edit-group label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .edit-group input,
+    .edit-group textarea,
+    .edit-group select {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-add-row {
+        background: #2196f3;
+        color: white;
+    }
+
+    .btn-theme {
+        background: #ff9800;
+        color: white;
+    }
+
+    .btn-clear {
+        background: #f44336;
+        color: white;
+    }
+
+    .btn-upload {
+        background: #9c27b0;
+        color: white;
+    }
+    .btn-small{
+        padding:4px 10px;
+        font-size:12px;
+    }
+
+    .report-wrap {
+        background: #fffef4;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 2px 12px #00000022;
+        border: 2px solid #82b864;
+    }
+
+    .report-header-title {
+        text-align: center;
+    }
+
+    .report-header-title .top-sub {
+        font-size: 24px;
+        color: #347c2c;
+    }
+
+    .report-header-title h1 {
+        font-size: 48px;
+        color: #8b4513;
+        margin: 6px 0 16px;
+    }
+
+    .info-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .avatar-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar-circle {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        border: 3px solid #ff5544;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .student-name {
+        font-size: 28px;
+        font-weight: bold;
+        color: #663311;
+    }
+
+    .student-class {
+        font-size: 15px;
+        color: #666;
+    }
+
+    .meta-info {
+        flex-grow: 1;
+    }
+
+    .meta-item {
+        font-size: 14px;
+        color: #555;
+        margin: 4px 0;
+    }
+
+    .stat-right {
+        display: flex;
+        gap: 24px;
+    }
+
+    .stat-card {
+        text-align: center;
+    }
+
+    .stat-card .num {
+        font-size: 36px;
+        font-weight: bold;
+        color: #c82423;
+    }
+
+    .stat-card .label {
+        font-size: 14px;
+        color: #444;
+    }
+
+    .five-bar {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .bar-item {
+        padding: 12px 6px;
+        text-align: center;
+        border-radius: 12px;
+    }
+
+    .bar-item .big-num {
+        font-size: 38px;
+        font-weight: bold;
+        margin: 4px 0;
+    }
+
+    .bar-item .label-text {
+        font-size: 15px;
+    }
+
+    .bar-1 { background: #ffe9cc; }
+    .bar-2 { background: #cce0ff; }
+    .bar-3 { background: #e8d8ff; }
+    .bar-4 { background: #d8f2dc; }
+    .bar-5 { background: #fff2cc; }
+
+    /*===== 徽章成就样式 =====*/
+    .badge-section{
+        margin-bottom:24px;
+    }
+    .badge-wrap{
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+    }
+    .badge-item{
+        padding:8px 12px;
+        border-radius:10px;
+        border:1px solid #ccc;
+        background:#f7f7f7;
+        font-size:14px;
+        color:#999;
+    }
+    .badge-item.unlock{
+        background:#fff8cc;
+        border-color:#f2bc4f;
+        color:#b36b00;
+    }
+
+    .pet-home-section {
+        margin-bottom: 24px;
+    }
+
+    .section-title {
+        font-size: 22px;
+        color: #347c2c;
+        font-weight: bold;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pet-row {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 14px;
+    }
+
+    .pet-card {
+        border: 1px solid #ddd;
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+        background: #fffdf4;
+    }
+
+    .pet-img-wrap {
+        display: inline-block;
+        position: relative;
+    }
+
+    .egg-glow {
+        animation: eggShine 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes eggShine {
+        0% {
+            filter: drop-shadow(0 0 6px #fff8aa) drop-shadow(0 0 10px #ffe680);
+        }
+        100% {
+            filter: drop-shadow(0 0 14px #fff280) drop-shadow(0 0 22px #ffdd55);
+        }
+    }
+
+    .pet-card img {
+        max-width: 220px;
+    }
+
+    /*=====家园卡片修复，文字不被遮挡=====*/
+    .home-card {
+        border: 1px solid #ddd;
+        border-radius: 14px;
+        padding: 14px;
+        background: #fffdf4;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .home-card .home-img-box {
+        width: 100%;
+        height: 180px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f5f5f5;
+        flex-shrink: 0;
+    }
+    .home-card .home-img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .home-desc {
+        text-align: center;
+        padding: 4px 6px;
+        flex-shrink: 0;
+    }
+    .home-desc #homeName {
+        font-weight: bold;
+        color: #347c2c;
+    }
+    .home-desc #petTip {
+        font-size: 14px;
+        color: #277020;
+        margin-top:4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    table th,
+    table td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: center;
+    }
+
+    table td input {
+        width: 100%;
+        border: none;
+        text-align: center;
+        font-size: 15px;
+        outline: none;
+    }
+
+    table th {
+        background: #e8f4e8;
+    }
+
+    .total-row {
+        background: #dbefdb;
+        font-weight: bold;
+    }
+
+    .teacher-talk {
+        border: 1px solid #b2d89c;
+        border-radius: 14px;
+        padding: 16px;
+        background: #f3fbeb;
+    }
+
+    .teacher-talk h4 {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+
+    .footer-note {
+        margin-top: 16px;
+        font-size: 12px;
+        color: #777;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    @media print {
+        .edit-panel,.student-sidebar,.sidebar-btn-group {
+            display: none !important;
+        }
+        .egg-glow {
+            animation: none !important;
+            filter: none !important;
+        }
+        body {
+            background: #fff;
+        }
+        .report-wrap {
+            box-shadow: none;
+            border: none;
+        }
+        .home-card .home-img-box,
+        .home-desc,
+        .badge-item{
+            break-inside: avoid;
+        }
+        .main-wrap{grid-template-columns:1fr;}
+    }
+</style>
+</head>
+
+<body>
+<div class="main-wrap">
+    <!-- 学生名单侧边栏 -->
+    <div class="student-sidebar">
+        <h3>👥 学生名单</h3>
+        <div class="student-list" id="studentListBox"></div>
+        <div class="sidebar-btn-group">
+            <button class="btn-add-stu" onclick="addNewStudent()">新增学生</button>
+            <button class="btn-clear-all-stu" onclick="clearAllStudent()">清空全部</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 编辑面板 -->
+        <div class="edit-panel" id="editPanel">
+            <h3>📝 编辑学生信息 & 数据</h3>
+
+            <div class="edit-row">
+                <div class="edit-group">
+                    <label>学生姓名</label>
+                    <input id="inpName" placeholder="输入姓名" />
+                </div>
+                <div class="edit-group">
+                    <label>班级</label>
+                    <input id="inpClass" placeholder="输入班级" />
+                </div>
+                <div class="edit-group">
+                    <label>宠物昵称</label>
+                    <input id="inpPetNick" placeholder="自定义宠物昵称" />
+                </div>
+            </div>
+
+            <div class="edit-row">
+                <div class="edit-group">
+                    <label>本节课考勤</label>
+                    <input id="inpAttend" type="number" value="0" />
+                </div>
+                <div class="edit-group">
+                    <label>本节课发言</label>
+                    <input id="inpSpeak" type="number" value="0" />
+                </div>
+                <div class="edit-group">
+                    <label>本节课实验</label>
+                    <input id="inpLab" type="number" value="0" />
+                </div>
+                <div class="edit-group">
+                    <label>本节课纪律</label>
+                    <input id="inpRule" type="number" value="0" />
+                </div>
+                <div class="edit-group">
+                    <label>本节课卫生</label>
+                    <input id="inpClean" type="number" value="0" />
+                </div>
+            </div>
+
+            <div class="edit-row">
+                <div class="edit-group">
+                    <label>宠物主题</label>
+                    <select id="inpTheme">
+                        <option value="ice">🧊 冰川主题</option>
+                        <option value="fire">🔥 火焰主题</option>
+                        <option value="forest">🌳 森林主题</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="edit-row">
+                <div class="edit-group">
+                    <label>上传神秘的蛋图片</label>
+                    <input type="file" id="eggUpload" accept="image/*" />
+                    <div style="margin-top:4px">
+                        <button class="btn-small" onclick="clearCustomEgg()">清除当前主题蛋图</button>
+                    </div>
+                </div>
+                <div class="edit-group">
+                    <label>上传当前主题家园图片</label>
+                    <input type="file" id="homeUpload" accept="image/*" />
+                    <div style="margin-top:4px">
+                        <button class="btn-small" onclick="clearCustomHome()">清除当前主题家园图</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-group">
+                <label>老师评语</label>
+                <textarea id="inpComment" rows="2"></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-add-row" onclick="addLessonRow()">新增课次（录入当前数值）</button>
+                <button class="btn-theme" onclick="switchTheme()">切换宠物主题</button>
+                <button class="btn-upload" onclick="saveUploadedImages()">使用上传图片</button>
+                <button onclick="toggleEditPanel()">打印预览(隐藏编辑区)</button>
+                <button class="btn-clear" onclick="resetCurrentStudent()">重置当前学生</button>
+            </div>
+        </div>
+
+        <!-- 成长报告预览区域 -->
+        <div class="report-wrap">
+            <div class="report-header-title">
+                <div class="top-sub">贴纸萌宠乐园</div>
+                <h1>学生成长报告</h1>
+            </div>
+
+            <div class="info-row">
+                <div class="avatar-box">
+                    <div class="avatar-circle">
+                        <img id="petAvatarImg" src="" alt="宠物头像" />
+                    </div>
+                    <div>
+                        <div class="student-name" id="showName"></div>
+                        <div class="student-class" id="showClass"></div>
+                    </div>
+                </div>
+
+                <div class="meta-info">
+                    <div class="meta-item">🕒 统计范围：全部 <span id="totalLesson">0</span> 课</div>
+                    <div class="meta-item">🗓️ 数据截至：<span id="showTime"></span></div>
+                </div>
+
+                <div class="stat-right">
+                    <div class="stat-card">
+                        <div class="num" id="showTotalSticker">0</div>
+                        <div class="label">🌸总贴纸 张</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num" id="showLessonCount">0</div>
+                        <div class="label">📖记录课次 节</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="five-bar">
+                <div class="bar-item bar-1">
+                    <div class="label-text">📅考勤</div>
+                    <div class="big-num" id="showAttend">0</div>
+                </div>
+                <div class="bar-item bar-2">
+                    <div class="label-text">💬发言</div>
+                    <div class="big-num" id="showSpeak">0</div>
+                </div>
+                <div class="bar-item bar-3">
+                    <div class="label-text">🧪实验</div>
+                    <div class="big-num" id="showLab">0</div>
+                </div>
+                <div class="bar-item bar-4">
+                    <div class="label-text">🛡️纪律</div>
+                    <div class="big-num" id="showRule">0</div>
+                </div>
+                <div class="bar-item bar-5">
+                    <div class="label-text">🧹卫生</div>
+                    <div class="big-num" id="showClean">0</div>
+                </div>
+            </div>
+
+            <!-- 徽章成就区域 -->
+            <div class="badge-section">
+                <div class="section-title">🏅成长成就徽章</div>
+                <div class="badge-wrap" id="badgeBox"></div>
+            </div>
+
+            <div class="pet-home-section">
+                <div class="section-title">🌿我的宠物与专属家园</div>
+                <div class="pet-row">
+                    <div class="pet-card">
+                        <div class="pet-img-wrap" id="petImgWrap">
+                            <img id="petImg" src="" alt="宠物" />
+                        </div>
+                        <div style="margin-top:8px;font-weight:bold" id="petName"></div>
+                        <div style="font-size:13px;color:#666" id="petNickName">昵称：成长伙伴</div>
+                    </div>
+                    <div class="home-card">
+                        <div class="home-img-box">
+                            <img id="homeImg" src="" alt="家园" />
+                        </div>
+                        <div class="home-desc">
+                            <div id="homeName"></div>
+                            <div id="petTip"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">📖逐节课奖励明细</div>
+                <table id="lessonTable">
+                    <thead>
+                        <tr>
+                            <th>课次</th>
+                            <th>考勤</th>
+                            <th>发言</th>
+                            <th>实验</th>
+                            <th>纪律</th>
+                            <th>卫生</th>
+                            <th>课次备注</th>
+                            <th>合计</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lessonTbody"></tbody>
+                </table>
+            </div>
+
+            <div class="teacher-talk">
+                <h4>✏️老师的话</h4>
+                <p id="showComment"></p>
+            </div>
+
+            <div class="footer-note">
+                <span>ℹ️ 本报告记录导出时的数据与宠物形态，后续变化需重新导出。</span>
+                <span id="footerTime"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 宠物主题配置
+const petThemes = {
+    ice: {
+        name: "冰川主题",
+        stages: [
+            {
+                min: 0, max: 24,
+                petName: "神秘的蛋",
+                petImg: "",
+                homeName: "家园：冰川滑乐园",
+                homeImg: "",
+                tip: "当前成长 {total} 张·距幼体还差 {need} 张",
+                isEgg: true
+            },
+            {
+                min: 25, max: 49,
+                petName: "冰川幼体",
+                petImg: "https://picsum.photos/id/104/400/400",
+                homeName: "家园：冰川水晶洞",
+                homeImg: "https://picsum.photos/id/105/600/300",
+                tip: "当前成长 {total} 张·距青年还差 {need} 张",
+                isEgg: false
+            },
+            {
+                min: 50, max: 99,
+                petName: "冰川青年萌宠",
+                petImg: "https://picsum.photos/id/106/400/400",
+                homeName: "家园：冰川极光城堡",
+                homeImg: "https://picsum.photos/id/107/600/300",
+                tip: "当前成长 {total} 张·距成年还差 {need} 张",
+                isEgg: false
+            },
+            {
+                min: 100, max: 9999,
+                petName: "冰川成年萌宠",
+                petImg: "https://picsum.photos/id/108/400/400",
+                homeName: "家园：极光冰原王国",
+                homeImg: "https://picsum.photos/id/109/600/300",
+                tip: "🎉恭喜！宠物已经成年！",
+                isEgg: false
+            }
+        ]
+    },
+    fire: {
+        name: "火焰主题",
+        stages: [
+            {
+                min: 0, max: 24,
+                petName: "火之蛋",
+                petImg: "",
+                homeName: "家园：炎岩洞窟",
+                homeImg: "",
+                tip: "当前成长 {total} 张·距幼兽还差 {need} 张",
+                isEgg: true
+            },
+            {
+                min: 25, max: 49,
+                petName: "火焰幼兽",
+                petImg: "https://picsum.photos/id/112/400/400",
+                homeName: "家园：熔岩湖畔",
+                homeImg: "https://picsum.photos/id/113/600/300",
+                tip: "当前成长 {total} 张·距炎灵少年还差 {need} 张",
+                isEgg: false
+            },
+            {
+                min: 50, max: 99,
+                petName: "炎灵少年",
+                petImg: "https://picsum.photos/id/114/400/400",
+                homeName: "家园：烈焰火山殿",
+                homeImg: "https://picsum.photos/id/115/600/300",
+                tip: "当前成长 {total} 张·距圣兽还差 {need} 张",
+                isEgg: false
+            },
+            {
+                min: 100, max: 9999,
+                petName: "烈焰圣兽",
+                petImg: "https://picsum.photos/id/116/400/400",
+                homeName: "家园：红莲火焰王国",
+                homeImg: "https://picsum.photos/id/117/600/300",
+                tip: "🎉恭喜！火焰宠物已经成年！",
+                isEgg: false
+            }
+        ]
+    },
+    forest: {
+        name: "森林主题",
+        stages: [
+            {
+                min: 0, max: 24,
+                petName: "叶之蛋",
+                petImg: "",
+                homeName: "家园：神秘种子林",
+                homeImg: "",
+                tip: "当前成长 {total} 张·距幼芽还差 {need} 张",
+                isEgg: true
+            },
+            {
+                min: 25, max: 49,
+                petName: "森林幼芽",
+                petImg: "https://picsum.photos/id/120/400/400",
+                homeName: "家园：蘑菇溪谷",
+                homeImg: "https://picsum.photos/id/121/600/300",
+                tip: "当前成长 {total} 张·距精灵还差 {need} 张",
+                isEgg: false
+            },
+            {
+                min: 50, max: 99,
+                petName: "林间精灵",
+                petImg: "https://picsum.photos/id/122/400/400",
+                homeName: "家园：精灵树屋",
+                homeImg: "https://picsum.photos/id/123/600/300",
+                tip: "当前成长 {total} 张·距守护者还差 {need} 张",
+                isEgg: false
+            },
+            {
+                min: 100, max: 9999,
+                petName: "森林守护者",
+                petImg: "https://picsum.photos/id/124/400/400",
+                homeName: "家园：永恒生命之树",
+                homeImg: "https://picsum.photos/id/125/600/300",
+                tip: "🎉恭喜！森林宠物已经成年！",
+                isEgg: false
+            }
+        ]
+    }
+};
+
+//徽章配置
+const badgeConfig = [
+    {key:"attend",name:"🎖全勤小达人",desc:"考勤累计≥4",threshold:4},
+    {key:"speak",name:"💬发言小明星",desc:"发言累计≥8",threshold:8},
+    {key:"lab",name:"🧪实验探索家",desc:"实验累计≥6",threshold:6},
+    {key:"rule",name:"✨纪律小标兵",desc:"纪律累计≥4",threshold:4},
+    {key:"clean",name:"🧹卫生小卫士",desc:"卫生累计≥4",threshold:4},
+    {key:"all",name:"🏆全能萌宠大师",desc:"全部徽章解锁",threshold:5}
+];
+
+// ========== 多学生全局数据 ==========
+let studentList = [];
+let currentIndex = -1;
+
+// 单个学生默认模板
+function getEmptyStudent(){
+    return {
+        name: "",
+        className: "",
+        petNick:"成长伙伴",
+        theme: "ice",
+        comment: "",
+        lessonList: [],
+        customImages: {
+            ice: { egg: "", home: "" },
+            fire: { egg: "", home: "" },
+            forest: { egg: "", home: "" }
+        },
+        saveTime: new Date().toLocaleString()
+    }
+}
+
+// 读取全部学生
+function loadAllStudents() {
+    const raw = localStorage.getItem("petReportStudentList");
+    if(!raw){
+        studentList = [];
+        // 自动新建第一个空白学生
+        studentList.push(getEmptyStudent());
+        currentIndex = 0;
+        saveAllStudents();
+        return;
+    }
+    const obj = JSON.parse(raw);
+    studentList = obj.list || [];
+    currentIndex = obj.selectedIndex ?? 0;
+    // 兼容旧数据
+    studentList.forEach(s=>{
+        if(s.petNick===undefined) s.petNick="成长伙伴";
+        if(!s.lessonList) s.lessonList=[];
+        s.lessonList.forEach(les=>{if(les.note===undefined)les.note="";});
+    })
+}
+
+// 保存全部学生+选中索引
+function saveAllStudents(){
+    localStorage.setItem("petReportStudentList",JSON.stringify({
+        list:studentList,
+        selectedIndex:currentIndex
+    }))
+}
+
+// 获取当前选中学生
+function getCurrentStudent(){
+    if(currentIndex<0 || currentIndex>=studentList.length) return null;
+    return studentList[currentIndex];
+}
+// 保存当前学生修改
+function saveCurrentStudentData(){
+    const s = getCurrentStudent();
+    if(!s) return;
+    s.name = document.getElementById("inpName").value;
+    s.className = document.getElementById("inpClass").value;
+    s.petNick = document.getElementById("inpPetNick").value;
+    s.theme = document.getElementById("inpTheme").value;
+    s.comment = document.getElementById("inpComment").value;
+    s.saveTime = new Date().toLocaleString();
+    saveAllStudents();
+}
+
+// 切换学生
+function switchStudent(idx){
+    saveCurrentStudentData();
+    currentIndex = idx;
+    saveAllStudents();
+    renderStudentList();
+    renderPage();
+}
+
+// 新增空白学生
+function addNewStudent(){
+    saveCurrentStudentData();
+    studentList.push(getEmptyStudent());
+    currentIndex = studentList.length - 1;
+    saveAllStudents();
+    renderStudentList();
+    renderPage();
+}
+
+// 删除单个学生
+function delStudent(idx,event){
+    event.stopPropagation();
+    if(!confirm("确定删除该学生所有数据？不可恢复！")) return;
+    studentList.splice(idx,1);
+    if(studentList.length===0){
+        studentList.push(getEmptyStudent());
+        currentIndex=0;
+    }else if(currentIndex >= studentList.length){
+        currentIndex = studentList.length -1;
+    }
+    saveAllStudents();
+    renderStudentList();
+    renderPage();
+}
+
+// 渲染侧边学生名单
+function renderStudentList(){
+    const box = document.getElementById("studentListBox");
+    box.innerHTML="";
+    studentList.forEach((stu,idx)=>{
+        const div = document.createElement("div");
+        div.className = "student-item"+(idx===currentIndex?" active":"");
+        div.onclick = ()=>switchStudent(idx);
+        const nameText = stu.name ? stu.name : "【未命名学生】";
+        div.innerHTML = `<span>${nameText}</span><button onclick="delStudent(${idx},event)">删除</button>`;
+        box.appendChild(div);
+    })
+}
+
+// 重置【当前选中学生】数据
+function resetCurrentStudent(){
+    if(!confirm("确定清空当前学生全部课次、图片、评语？不可恢复！")) return;
+    studentList[currentIndex] = getEmptyStudent();
+    saveAllStudents();
+    renderStudentList();
+    renderPage();
+}
+
+// 清空全部学生
+function clearAllStudent(){
+    if(!confirm("⚠️ 全部学生数据一次性清空！无法恢复，确认吗？")) return;
+    studentList = [];
+    studentList.push(getEmptyStudent());
+    currentIndex = 0;
+    saveAllStudents();
+    renderStudentList();
+    renderPage();
+}
+
+function calcTotal(list) {
+    let attend = 0, speak = 0, lab = 0, rule = 0, clean = 0;
+    list.forEach(les => {
+        attend += Number(les.attend || 0);
+        speak += Number(les.speak || 0);
+        lab += Number(les.lab || 0);
+        rule += Number(les.rule || 0);
+        clean += Number(les.clean || 0);
+    });
+    return { attend, speak, lab, rule, clean, total: attend + speak + lab + rule + clean };
+}
+
+function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+    });
+}
+
+async function saveUploadedImages() {
+    const data = getCurrentStudent();
+    const theme = document.getElementById("inpTheme").value;
+    const eggFile = document.getElementById("eggUpload").files[0];
+    const homeFile = document.getElementById("homeUpload").files[0];
+    let hasUpdate = false;
+
+    if (eggFile) {
+        data.customImages[theme].egg = await readFileAsDataURL(eggFile);
+        hasUpdate = true;
+    }
+    if (homeFile) {
+        data.customImages[theme].home = await readFileAsDataURL(homeFile);
+        hasUpdate = true;
+    }
+
+    if (!hasUpdate) {
+        alert("⚠️没有选中任何图片！请先选择图片文件再点按钮");
+        return;
+    }
+    saveAllStudents();
+    renderPage();
+    alert("✅上传图片已应用到当前主题！");
+}
+
+//清除自定义蛋图
+function clearCustomEgg(){
+    const data=getCurrentStudent();
+    const theme=document.getElementById("inpTheme").value;
+    data.customImages[theme].egg="";
+    saveAllStudents();
+    renderPage();
+    alert("已清除当前主题蛋图片");
+}
+//清除自定义家园图
+function clearCustomHome(){
+    const data=getCurrentStudent();
+    const theme=document.getElementById("inpTheme").value;
+    data.customImages[theme].home="";
+    saveAllStudents();
+    renderPage();
+    alert("已清除当前主题家园图片");
+}
+
+//打印预览切换
+let editVisible=true;
+function toggleEditPanel(){
+    editVisible=!editVisible;
+    const el=document.getElementById("editPanel");
+    el.style.display=editVisible?"block":"none";
+}
+
+function addLessonRow() {
+    const data = getCurrentStudent();
+    const newLesson = {
+        name: "第" + (data.lessonList.length + 1) + "课",
+        attend: Number(document.getElementById("inpAttend").value || 0),
+        speak: Number(document.getElementById("inpSpeak").value || 0),
+        lab: Number(document.getElementById("inpLab").value || 0),
+        rule: Number(document.getElementById("inpRule").value || 0),
+        clean: Number(document.getElementById("inpClean").value || 0),
+        note:""
+    };
+    data.lessonList.push(newLesson);
+    saveAllStudents();
+
+    document.getElementById("inpAttend").value = 0;
+    document.getElementById("inpSpeak").value = 0;
+    document.getElementById("inpLab").value = 0;
+    document.getElementById("inpRule").value = 0;
+    document.getElementById("inpClean").value = 0;
+    renderPage();
+}
+
+function delLesson(index) {
+    let data = getCurrentStudent();
+    data.lessonList.splice(index, 1);
+    data.lessonList.forEach((item, i) => {
+        item.name = "第" + (i + 1) + "课";
+    });
+    saveAllStudents();
+    renderPage();
+}
+
+function changeCell(idx, field, val) {
+    const data = getCurrentStudent();
+    data.lessonList[idx][field] = val;
+    saveAllStudents();
+    renderPage();
+}
+
+function switchTheme() {
+    let data = getCurrentStudent();
+    data.theme = document.getElementById("inpTheme").value;
+    saveAllStudents();
+    renderPage();
+}
+
+//渲染徽章
+function renderBadges(sum){
+    const box=document.getElementById("badgeBox");
+    box.innerHTML="";
+    let unlockCount=0;
+    const status={
+        attend:sum.attend>=4,
+        speak:sum.speak>=8,
+        lab:sum.lab>=6,
+        rule:sum.rule>=4,
+        clean:sum.clean>=4
+    };
+    if(status.attend)unlockCount++;
+    if(status.speak)unlockCount++;
+    if(status.lab)unlockCount++;
+    if(status.rule)unlockCount++;
+    if(status.clean)unlockCount++;
+
+    badgeConfig.forEach(b=>{
+        let isUnlock=false;
+        if(b.key==="attend")isUnlock=status.attend;
+        if(b.key==="speak")isUnlock=status.speak;
+        if(b.key==="lab")isUnlock=status.lab;
+        if(b.key==="rule")isUnlock=status.rule;
+        if(b.key==="clean")isUnlock=status.clean;
+        if(b.key==="all")isUnlock=unlockCount>=b.threshold;
+
+        const div=document.createElement("div");
+        div.className="badge-item"+(isUnlock?" unlock":"");
+        div.innerText=b.name;
+        box.appendChild(div);
+    })
+}
+
+function renderPage() {
+    const data = getCurrentStudent();
+    if(!data) return;
+    window.lessonList = data.lessonList;
+    const sum = calcTotal(data.lessonList);
+
+    document.getElementById("inpName").value = data.name;
+    document.getElementById("inpClass").value = data.className;
+    document.getElementById("inpPetNick").value=data.petNick;
+    document.getElementById("inpTheme").value = data.theme || "ice";
+    document.getElementById("inpComment").value = data.comment;
+
+    document.getElementById("showName").innerText = data.name;
+    document.getElementById("showClass").innerText = data.className;
+    document.getElementById("petNickName").innerText="昵称："+data.petNick;
+    document.getElementById("showTime").innerText = data.saveTime;
+    document.getElementById("footerTime").innerText = "导出时间：" + data.saveTime + "｜第1页/共1页";
+
+    document.getElementById("showAttend").innerText = sum.attend;
+    document.getElementById("showSpeak").innerText = sum.speak;
+    document.getElementById("showLab").innerText = sum.lab;
+    document.getElementById("showRule").innerText = sum.rule;
+    document.getElementById("showClean").innerText = sum.clean;
+    document.getElementById("showTotalSticker").innerText = sum.total;
+    document.getElementById("showLessonCount").innerText = data.lessonList.length;
+    document.getElementById("totalLesson").innerText = data.lessonList.length;
+
+    //渲染徽章
+    renderBadges(sum);
+
+    const theme = petThemes[data.theme] || petThemes.ice;
+    let stage = theme.stages.find(s => sum.total >= s.min && sum.total <= s.max);
+    if (!stage) stage = theme.stages[theme.stages.length - 1];
+
+    let petImg = stage.petImg;
+    if (stage.isEgg && data.customImages[data.theme]?.egg) {
+        petImg = data.customImages[data.theme].egg;
+    }
+    let homeImg = stage.homeImg;
+    if (data.customImages[data.theme]?.home) {
+        homeImg = data.customImages[data.theme].home;
+    }
+
+    document.getElementById("petName").innerText = stage.petName;
+    const petImgEl=document.getElementById("petImg");
+    petImgEl.src = petImg;
+    petImgEl.onerror=()=>petImgEl.style.display="none";
+
+    const avatarEl=document.getElementById("petAvatarImg");
+    avatarEl.src=petImg;
+    avatarEl.onerror=()=>avatarEl.style.display="none";
+
+    document.getElementById("homeName").innerText = stage.homeName;
+    const homeImgEl=document.getElementById("homeImg");
+    homeImgEl.src = homeImg;
+    homeImgEl.onerror=()=>homeImgEl.style.display="none";
+
+    const wrapDom = document.getElementById("petImgWrap");
+    if (stage.isEgg) {
+        wrapDom.classList.add("egg-glow");
+    } else {
+        wrapDom.classList.remove("egg-glow");
+    }
+
+    let needNext = (stage.max + 1) - sum.total;
+    let tipText = stage.tip.replace("{total}", sum.total).replace("{need}", needNext);
+    document.getElementById("petTip").innerText = tipText;
+
+    document.getElementById("showComment").innerText = data.comment;
+
+    const tbody = document.getElementById("lessonTbody");
+    tbody.innerHTML = "";
+
+    window.lessonList.forEach(function (les, idx) {
+        const tr = document.createElement("tr");
+        tr.innerHTML =
+            "<td>" + les.name + "</td>" +
+            `<td><input type="number" value="${les.attend}" onchange="changeCell(${idx},'attend',this.value)"></td>` +
+            `<td><input type="number" value="${les.speak}" onchange="changeCell(${idx},'speak',this.value)"></td>` +
+            `<td><input type="number" value="${les.lab}" onchange="changeCell(${idx},'lab',this.value)"></td>` +
+            `<td><input type="number" value="${les.rule}" onchange="changeCell(${idx},'rule',this.value)"></td>` +
+            `<td><input type="number" value="${les.clean}" onchange="changeCell(${idx},'clean',this.value)"></td>` +
+            `<td><input type="text" value="${les.note||''}" onchange="changeCell(${idx},'note',this.value)"></td>` +
+            "<td>" + (Number(les.attend) + Number(les.speak) + Number(les.lab) + Number(les.rule) + Number(les.clean)) + "</td>" +
+            `<td><button onclick="delLesson(${idx})" style="background:#f44336;color:white;padding:4px">删除</button></td>`;
+        tbody.appendChild(tr);
+    });
+
+    const trTotal = document.createElement("tr");
+    trTotal.className = "total-row";
+    trTotal.innerHTML =
+        "<td>合计</td>" +
+        "<td>" + sum.attend + "</td>" +
+        "<td>" + sum.speak + "</td>" +
+        "<td>" + sum.lab + "</td>" +
+        "<td>" + sum.rule + "</td>" +
+        "<td>" + sum.clean + "</td>" +
+        "<td></td>"+
+        "<td>" + sum.total + "</td>" +
+        "<td></td>";
+    tbody.appendChild(trTotal);
+}
+
+document.getElementById("eggUpload").addEventListener("change", async function(){
+    const file = this.files[0];
+    if(!file) return;
+    const previewUrl = await readFileAsDataURL(file);
+    document.getElementById("petImg").src = previewUrl;
+    document.getElementById("petAvatarImg").src = previewUrl;
+});
+document.getElementById("homeUpload").addEventListener("change", async function(){
+    const file = this.files[0];
+    if(!file) return;
+    const previewUrl = await readFileAsDataURL(file);
+    document.getElementById("homeImg").src = previewUrl;
+});
+
+//监听昵称输入自动保存
+document.getElementById("inpPetNick").addEventListener("input",()=>{
+    const d=getCurrentStudent();
+    d.petNick=document.getElementById("inpPetNick").value;
+    saveAllStudents();
+    renderPage();
+})
+//监听姓名班级自动保存
+document.getElementById("inpName").addEventListener("input",()=>{
+    saveCurrentStudentData();
+    renderStudentList();
+})
+document.getElementById("inpClass").addEventListener("input",()=>{
+    saveCurrentStudentData();
+})
+
+window.onload = function(){
+    loadAllStudents();
+    renderStudentList();
+    renderPage();
+}
+</script>
+</body>
+</html>
